@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const dbConfig = require('../config/database');
 
-const User = require('../app/model/User');
+const User = require('../app/models/User');
 // const Adress = require('../models/Adress');
 // const Tech = require('../models/Tech');
 const connection = new Sequelize(dbConfig);
