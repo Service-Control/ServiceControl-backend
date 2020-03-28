@@ -1,20 +1,15 @@
-'use strict';
-
+'use strict'
 const express = require('express');
 const router = express.Router();
 
-var object = {
-    nome: 'Lucas Damas Corrêa',
-    idade: '19',
-    profissao: 'Desenvolvedor'
+const object = {
+    name: 'Lucas Damas Corrêa',
+    age: '19',
+    occupation: 'Developer'
 };
 
-JSON.stringify(object);
-
-const route = router.get('/', (req, res, next) => {
-    res.status(200).send({
+module.exports = router.get('/', (req, res) => {
+    res.json(
         object
-    });
+    );
 });
-
-module.exports = router;

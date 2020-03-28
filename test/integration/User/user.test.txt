@@ -1,13 +1,3 @@
-//1o criar test 
-//2o criar passwordHelper
-//3o gerar senha e guardar
-//4o criar model de usuario
-//5o adicionar chamada em api.js
-//6o adicionar no construtor de auth receber o model
-//7o criar logica na route
-//8o adicionar upsert no context e postgresStrategy
-//9o adicionar no arquivo postgres.sql o script para criar a tabela
-
 const assert = require('assert')
 const api = require('../api')
 const Context = require('./../src/db/strategies/base/contextStrategy')

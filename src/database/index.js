@@ -1,17 +1,9 @@
-const Sequelize = require('sequelize');
-const dbConfig = require('../config/database');
+'use strict'
+const knex = require('knex');
+const configuration = require('../../knexfile');
 
-const User = require('../app/models/User');
-// const Adress = require('../models/Adress');
-// const Tech = require('../models/Tech');
-const connection = new Sequelize(dbConfig);
+const config = process.env.NODE_ENV === 'test' ? configuration.test : configuration.development;
 
-User.init(connection);
-// Adress.init(connection);
-// Tech.init(connection);
+const connectionDatabase = knex(config);
 
-// Adress.associate(connection.models);
-// User.associate(connection.models);
-// Tech.associate(connection.models);
-
-module.exports = connection;
+module.exports = connectionDatabase;
