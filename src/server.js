@@ -1,4 +1,6 @@
 'use strict'
 
 const app = require('./app.js')
-app.listen(3333);
+const PORT = process.env.PORT || 3333;
+
+app.listen(PORT, () => {});
