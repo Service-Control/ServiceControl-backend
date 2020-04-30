@@ -1,8 +1,8 @@
 'use strict'
 const repository = require('../repository/UsersRepository');
-const { messageValidRegister } = require('../services/usersServices');
+const { messageValidEmailAndCpfCnpj, constructorObjectUpdate } = require('../services/usersServices');
 const bcrypt = require('bcryptjs');
-const mailer = require('../../../modules/mailer');
+const mailer = require('../../../../modules/mailer');
 
 module.exports = {
   async create(request, response) {
@@ -17,42 +17,37 @@ module.exports = {
       const name = data.name;
       const userToken = request.userToken.user;
 
-      const users = await repository.getValidRegister(data.email, data.cpfCnpj)
+      const users = await repository.getValidRegister(data.email, data.cpfCnpj);
 
       if (users) {
-        let menssageError = await messageValidRegister(users, data.email, data.typePerson);
+        let menssageError = await messageValidEmailAndCpfCnpj(users, data.email, data.typePerson);
         return response.status(400).json({ error: menssageError })
       };
 
       data.password = await bcrypt.hash(data.password, 10);
 
+      'The type 1 administrator can register another administrator'
       userToken.type === 1 ? data.type = request.body.type : data.type = 2;
 
       const user = await repository.post(data);
 
       if (!user) {
         return response.status(400).json({ error: 'Erro ao realizar registro de usuário.' });
-      }
+      };
 
       mailer.sendMail({
-        to: `${email};datatongji@gmail.com`,
-        from: '"Data Tongjì 统计" <no-reply@datatongji.com>',
-        subject: 'subject Data Tongjì',
-        template: 'auth/talkwithus_tks',
-        context: {
-          name
-        },
-      }, (err) => {
-        if (err)
-          return response.status(400).send({
-            error: 'rr.message'
-          });
+        to: `${contactData.email}`,
+        from: '"Service Control" <service.controlLDC@gmail.com>',
+        subject: `Obrigado por fazer parte dessa plataforma!`,
+        template: 'subs/subscription',
       });
 
       return response.json({ success: 'Usuário registrado com sucesso.' });
     } catch (error) {
-      return response.status(400).json({ error: `Erro ao realizar registro de usuário. Detalhes:${error}` })
-    }
+      return response.status(400).json({
+        error: `Erro ao realizar registro de usuário. Detalhes:${error}`
+      });
+    };
   },
 
   async index(request, response) {
@@ -64,25 +59,23 @@ module.exports = {
       return response.json(await repository.get(userToken.id));
 
     } catch (error) {
-      return response.status(400).json({ error: `Erro ao realizar a listagem de usuários. Detalhes: ${error}` });
+      return response.status(400).json({
+        error: `Erro ao realizar a listagem de usuários. Detalhes: ${error}`
+      });
     }
   },
 
   async update(request, response) {
     try {
-      const data = {
-        name: request.body.name,
-        email: request.body.email,
-        cpfCnpj: request.body.cpfCnpj,
-        typePerson: request.body.type,
-        type: request.body.type,
-      };
+      const { name, email, cpfCnpj, typePerson } = request.body
       const userToken = request.userToken.user;
       const { id } = request.params;
 
-
-      if (!data) {
-        return response.status(400).json({ error: 'Não existem parametros para serem atualizados' });
+      if (!{ name, email, cpfCnpj, typePerson }) {
+        return response.status(400).json({
+          error:
+            'Não existem parametros para serem atualizados.'
+        });
       };
 
       const user = await repository.get(id);
@@ -90,15 +83,24 @@ module.exports = {
         return response.status(400).json({ error: 'Usuário não encontrado.' });
       };
 
+      const userUpdate = await constructorObjectUpdate({ name, email, cpfCnpj, typePerson });
+
       if (userToken.type === 1 || user.id === userToken.id) {
-        await repository.put(id, data);
+        await repository.put(id, userUpdate);
+
         return response.json({ success: 'Usuário atualizado com sucesso.' });
       }
 
-      return response.status(401).json({ error: 'Seu usuário não pussui a permisão para atualizar outros usuários.' });
+      return response.status(401).json({
+        error:
+          'Seu usuário não pussui a permisão para atualizar outros usuários.'
+      });
 
     } catch (error) {
-      return response.status(400).json({ error: `Erro ao atualizar usuário. Detalhes: ${error}` });
+      return response.status(400).json({
+        error:
+          `Erro ao atualizar usuário. Detalhes: ${error}`
+      });
     }
   },
 
@@ -114,7 +116,6 @@ module.exports = {
       };
 
       if (userToken.type === 1 || user.id === userToken.id) {
-
         await repository.delete(id);
         return response.status(204).json();
       };
@@ -124,7 +125,9 @@ module.exports = {
       });
 
     } catch (error) {
-      return response.status(400).json({ error: `Erro ao deletar usuário. Detalhes: ${error}` });
-    }
+      return response.status(400).json({
+        error: `Erro ao deletar usuário. Detalhes: ${error}`
+      });
+    };
   },
 };

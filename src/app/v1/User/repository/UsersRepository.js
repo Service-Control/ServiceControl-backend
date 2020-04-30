@@ -1,5 +1,5 @@
 'use strict'
-const database = require('../../../database/index');
+const database = require('../../../../database/index');
 module.exports = {
 
 	async get(id) {
@@ -17,26 +17,35 @@ module.exports = {
 	},
 	
 	async getValidRegister(email, cpfCnpj) {
-		return await database('Users')
+		const users = await database('Users')
 			.where('email', '=', email).orWhere('cpfCnpj', '=', cpfCnpj)
 			.select('name', 'email','cpfCnpj')
 			.first();
+
+		return users;
 	},
 
 	async post(data) {
-		return await database('Users').insert(data);
+		const users = await database('Users').insert(data);
+
+		return users;
 	},
 
 	async put(id, data) {
-		return await database('Users')
+		console.log(data)
+		const users = await database('Users')
 			.where('id', '=', id)
 			.update(data)
-			.clearCounters()
+			.clearCounters();
+
+		return users;
 	},
 
 	async delete(id) {
-		return await database('Users')
+		const users = await database('Users')
 			.where('id', id)
-			.del()
+			.del();
+
+		return users;
 	}
 };

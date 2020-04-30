@@ -1,15 +1,19 @@
-'use strict'
+'use strict';
+
+require('dotenv/config');
 const express = require('express');
 const router = express.Router();
 
-const object = {
-    name: 'Lucas Damas Corrêa',
-    age: '19',
-    occupation: 'Developer'
-};
+var Development = [process.env.APP_NAME];
+Development.push({
+    'Made by': 'Lucas Damas Corrês',
+    GitHub: 'https://github.com/lucasdcorrea1'
+})
 
-module.exports = router.get('/', (req, res) => {
-    res.json(
-        object
-    );
+
+const route = router.get('/', (req, res, next) => {
+    res.status(200).send({
+        Development
+    });
 });
+module.exports = route;

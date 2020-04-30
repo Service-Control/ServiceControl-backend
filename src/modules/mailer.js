@@ -7,11 +7,9 @@ const usr = process.env.MAIL_USER;
 const pass = process.env.MAIL_PASS;
 
 const transport = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: usr,
-    pass: pass
-  },
+  service: 'SendGrid',
+    auth: { user: usr, 
+    pass: pass },
 });
 
 const handlebarOptions = {

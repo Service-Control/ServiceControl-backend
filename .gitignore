@@ -8,7 +8,8 @@ yarn.lock
 
 .vs 
 
-.vscode 
+.vscode
+.idea
 
 functions 
 
