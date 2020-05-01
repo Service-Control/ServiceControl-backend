@@ -36,7 +36,7 @@ module.exports = {
       };
 
       mailer.sendMail({
-        to: `${contactData.email}`,
+        to: `${data.email}`,
         from: '"Service Control" <service.controlLDC@gmail.com>',
         subject: `Obrigado por fazer parte dessa plataforma!`,
         template: 'subs/subscription',
