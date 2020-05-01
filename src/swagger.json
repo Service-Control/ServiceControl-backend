@@ -1,0 +1,267 @@
+{
+      "swagger": "2.0",
+      "info": {
+            "title": "Service Control - API Documentation",
+            "description": "This is a sample server for standard APIs of the application!",
+            "contact": {
+                  "name": "Lucas Damas Corrêa - Developer at CloudMed Tecnologia",
+                  "email": "lucas.dcorrea1@gmail.com"
+            },
+            "version": "2.0.1",
+            "servers": [
+                  {
+                        "url": "http://localhost:3333",
+                        "description": "Local Host"
+                  },
+                  {
+                        "url": "https://api-service-control.herokuapp.com/",
+                        "description": "Production"
+                  }
+            ]
+      },
+      "host": [
+            "api-service-control.herokuapp.com"
+      ],
+      "basePath": "/api/v1/",
+      "tags": [
+            {
+                  "name": "Ping"
+            },
+            {
+                  "name": "User"
+            }
+      ],
+      "schemes": [
+            "http",
+            "https"
+      ],
+      "paths": {
+            "/": {
+                  "get": {
+                        "tags": [
+                              "Ping"
+                        ],
+                        "summary": "Copyright",
+                        "operationId": "copyright",
+                        "consumes": [
+                              "application/json"
+                        ],
+                        "produces": [
+                              "application/json"
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Development",
+                                    "schema": {
+                                          "type": "array",
+                                          "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "Made by": {
+                                                            "type": "string",
+                                                            "example": "Lucas Damas Corrês",
+                                                            "description": "Name Developer"
+                                                      },
+                                                      "GitHub": {
+                                                            "type": "string",
+                                                            "example": "https://github.com/lucasdcorrea1",
+                                                            "description": "GitHub URL"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "Validation error",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "401": {
+                                    "description": "NGO already registered",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal error while processing request",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "503": {
+                                    "description": "Error while sending email confirmation",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              }
+                        }
+                  }
+            },
+            "/user/": {
+                  "post": {
+                        "tags": [
+                              "User"
+                        ],
+                        "summary": "Create a user",
+                        "operationId": "createUser",
+                        "consumes": [
+                              "application/json"
+                        ],
+                        "produces": [
+                              "application/json"
+                        ],
+                        "parameters": [
+                              {
+                                    "in": "body",
+                                    "name": "Email",
+                                    "description": "NGO's email",
+                                    "required": true,
+                                    "schema": {
+                                          "type": "object",
+                                          "properties": {
+                                                "name": {
+                                                      "type": "string",
+                                                      "example": "Lucas Damas Corrêa",
+                                                      "required": true,
+                                                      "description": "user name"
+                                                },
+                                                "email": {
+                                                      "type": "string",
+                                                      "example": "example@gmail.com",
+                                                      "required": true,
+                                                      "description": "User e-mail"
+                                                },
+                                                "cpfCnpj": {
+                                                      "type": "number",
+                                                      "example": 48226854518,
+                                                      "required": true,
+                                                      "description": "Cpf or Cnpj"
+                                                },
+                                                "typePerson": {
+                                                      "type": "number",
+                                                      "example": 1,
+                                                      "required": true,
+                                                      "description": "Record types. cpf type 1, cnpj type 2"
+                                                },
+                                                "type": {
+                                                      "type": "number",
+                                                      "example": 2,
+                                                      "description": "Types of users. type 1 administrator, type 2 common user"
+                                                },
+                                                "password": {
+                                                      "type": "string",
+                                                      "example": "15dvSfb8@",
+                                                      "required": true,
+                                                      "description": "User password"
+                                                }
+                                          }
+                                    }
+                              }
+                        ],
+                        "responses": {
+                              "200": {
+                                    "description": "Development",
+                                    "schema": {
+                                          "type": "array",
+                                          "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                      "Made by": {
+                                                            "type": "string",
+                                                            "example": "Lucas Damas Corrês",
+                                                            "description": "Name Developer"
+                                                      },
+                                                      "GitHub": {
+                                                            "type": "string",
+                                                            "example": "https://github.com/lucasdcorrea1",
+                                                            "description": "GitHub URL"
+                                                      }
+                                                }
+                                          }
+                                    }
+                              },
+                              "400": {
+                                    "description": "Validation error",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "401": {
+                                    "description": "NGO already registered",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "500": {
+                                    "description": "Internal error while processing request",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              },
+                              "503": {
+                                    "description": "Error while sending email confirmation",
+                                    "schema": {
+                                          "$ref": "#/definitions/ErrorResponseDto"
+                                    }
+                              }
+                        }
+                  }
+            }
+      },
+      "definitions": {
+            "UserDto": {
+                  "type": "object",
+                  "required": [
+                        "name",
+                        "email",
+                        "cpfCnpj",
+                        "typePerson",
+                        "password"
+                  ],
+                  "properties": {
+                        "name": {
+                              "type": "string",
+                              "example": "Lucas Damas Corrêa",
+                              "description": "user name"
+                        },
+                        "email": {
+                              "type": "string",
+                              "example": "example@gmail.com",
+                              "description": "User e-mail"
+                        },
+                        "cpfCnpj": {
+                              "type": "number",
+                              "example": 48226854518,
+                              "description": "Cpf or Cnpj"
+                        },
+                        "typePerson": {
+                              "type": "number",
+                              "example": 1,
+                              "description": "Record types. cpf type 1, cnpj type 2"
+                        },
+                        "type": {
+                              "type": "number",
+                              "example": 2,
+                              "description": "Types of users. type 1 administrator, type 2 common user"
+                        },
+                        "password": {
+                              "type": "string",
+                              "example": "15dvSfb8@",
+                              "description": "User password"
+                        }
+                  },
+                  "description": "User registration"
+            },
+            "ErrorResponseDto": {
+                  "type": "object",
+                  "properties": {
+                        "message": {
+                              "type": "string",
+                              "example": "Error message",
+                              "description": "Error description"
+                        }
+                  }
+            }
+      }
+}
