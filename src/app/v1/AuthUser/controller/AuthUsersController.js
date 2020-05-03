@@ -17,13 +17,13 @@ module.exports = {
       const user = await authRepository.getUserByEmail(data.email);
       if (!user)
         return response.status(400).json({
-          error: 'E-mail ou senha inválidos!'
+          message: 'E-mail ou senha inválidos!'
         });
 
 
       if (!await bcrypt.compare(data.password, user.password))
         return response.status(400).json({
-          error: 'E-mail ou senha inválidos!'
+          message: 'E-mail ou senha inválidos!'
         });
 
       user.password = undefined;
@@ -38,7 +38,7 @@ module.exports = {
       });
     } catch (error) {
       return response.status(400).json({
-        error: error
+        message: error
       });
     }
   },
@@ -52,7 +52,7 @@ module.exports = {
       const user = await authRepository.getUserByEmail(data.email);
 
       if (!user)
-        return response.status(400).json({ error: 'Usuário não encontrado!' });
+        return response.status(400).json({ message: 'Usuário não encontrado!' });
 
       const token = crypto.randomBytes(20).toString('hex');
 
@@ -81,11 +81,11 @@ module.exports = {
       });
 
       return response.status(200).json({
-        success: `Enviamos o token de autorização para o e-mail ${data.email}`
+        message: `Enviamos o token de autorização para o e-mail ${data.email}`
       });
 
     } catch (error) {
-      return response.status(400).json({ error: `Erro ao solicitar troca de senha ${error}` });
+      return response.status(400).json({ message: `Erro ao solicitar troca de senha ${error}` });
     };
   },
 
@@ -100,16 +100,16 @@ module.exports = {
       const user = await authRepository.getUserByEmail(data.email);
 
       if (!user)
-        return response.status(400).json({ error: 'Usuário não encontrado.' });
+        return response.status(400).json({ message: 'Usuário não encontrado.' });
 
       if (data.token !== user.passwordResetToken)
-        return response.status(400).json({ error: 'Token inválido.' });
+        return response.status(400).json({ message: 'Token inválido.' });
 
       if (!now > user.passwordResetExpires)
-        return response.status(400).json({ error: 'Token expirado.' });
+        return response.status(400).json({ message: 'Token expirado.' });
 
       if (await bcrypt.compare(data.password, user.password))
-        return response.status(400).json({ error: 'Utilize uma senha diferente da atual!' });
+        return response.status(400).json({ message: 'Utilize uma senha diferente da atual!' });
 
       data.password = await bcrypt.hash(data.password, 10);
 
@@ -124,9 +124,9 @@ module.exports = {
 
       user.password = undefined;
 
-      return response.status(200).json({ success: 'Senha atualizada com sucesso.' });
+      return response.status(200).json({ message: 'Senha atualizada com sucesso.' });
     } catch (error) {
-      response.status(400).json({ error: `Erro ao resetar senha: ${error}` });
+      response.status(400).json({ message: `Erro ao resetar senha: ${error}` });
     }
   }
 };
