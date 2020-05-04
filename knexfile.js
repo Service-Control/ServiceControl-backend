@@ -1,56 +1,25 @@
-'use strict'
+'use strict';
 
 module.exports = {
-  development: {
-    client: 'sqlite3',
-    connection: {
-      filename: './src/database/dev.sqlite'
-    },
-    migrations: {
-      directory: './src/database/migrations'
-    },
-    useNullAsDefault: true
-  },
   test: {
-    client: 'sqlite3',
-    connection: {
-      filename: './src/database/test.sqlite'
-    },
-    migrations: {
-      directory: './src/database/migrations'
-    },
-    useNullAsDefault: true,
-  },
-  staging: {
     client: 'pg',
-    connection: {
-      database: 'heroes',
-      user: 'ldcorrea',
-      password: 'Lucas123'
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
+    connection: process.env.POSTGRES_CONNECTION,
     migrations: {
-      tableName: 'knex_migrations'
+      directory: `${__dirname}/src/database/migrations`,
     }
   },
-
-  production: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user: 'username',
-      password: 'password'
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
+  development: {
+    client: 'pg',
+    connection: process.env.POSTGRES_CONNECTION,
     migrations: {
-      tableName: 'knex_migrations'
+      directory: `${__dirname}/src/database/migrations`,
+    }
+  },
+  production: {
+    client: 'pg',
+    connection: process.env.POSTGRES_CONNECTION,
+    migrations: {
+      directory: `${__dirname}/src/database/migrations`,
     }
   }
-
 };

@@ -4,9 +4,10 @@ exports.up = function (knex) {
 
     table.string('name').notNullable();
     table.string('email').notNullable();
-    table.decimal('cpfCnpj').notNullable();
+    table.bigInteger('cpfCnpj').notNullable();
     table.integer('type').notNullable();
     table.integer('typePerson').notNullable();
+    table.integer('status').notNullable();
     table.string('password').notNullable();
     table.string('passwordResetToken');
     table.string('passwordResetExpires');

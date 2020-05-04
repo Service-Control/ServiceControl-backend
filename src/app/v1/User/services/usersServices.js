@@ -14,6 +14,7 @@ module.exports = {
 		userdata.email !== undefined ? userUpdate.email = userdata.email.trim() : false;
 		userdata.cpfCnpj !== undefined ? userUpdate.cpfCnpj = userdata.cpfCnpj : false;
 		userdata.typePerson !== undefined ? userUpdate.typePerson = userdata.typePerson : false;
+		userdata.status !== undefined ? userUpdate.status = userdata.status : false;
 	
 		return userUpdate;
 	}

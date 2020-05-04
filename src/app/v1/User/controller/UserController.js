@@ -12,8 +12,14 @@ module.exports = {
         email: request.body.email.trim(),
         cpfCnpj: request.body.cpfCnpj,
         typePerson: request.body.typePerson,
-        password: request.body.password.trim()
+        password: request.body.password.trim(),
+        status: 0
       };
+
+    'status 0 = pendente';
+    'status 1 = Ativo';
+    'status 2 = Bloqueado';
+
       const name = data.name;
       const userToken = request.userToken.user;
 
@@ -36,10 +42,13 @@ module.exports = {
       };
 
       mailer.sendMail({
-        to: `${data.email}`,
+        to: `${user.email}, ${process.env.GMAIL_USER}`,
         from: '"Service Control" <service.controlLDC@gmail.com>',
-        subject: `Obrigado por fazer parte dessa plataforma!`,
+        subject: `Obrigado ${name}, por fazer parte dessa plataforma!`,
         template: 'subs/subscription',
+        context: {
+          name
+        },
       });
 
       return response.json({ success: 'Usuário registrado com sucesso.' });
@@ -67,11 +76,11 @@ module.exports = {
 
   async update(request, response) {
     try {
-      const { name, email, cpfCnpj, typePerson } = request.body
+      const { name, email, cpfCnpj, typePerson, status } = request.body
       const userToken = request.userToken.user;
       const { id } = request.params;
 
-      if (!{ name, email, cpfCnpj, typePerson }) {
+      if (!{ name, email, cpfCnpj, typePerson, status }) {
         return response.status(400).json({
           error:
             'Não existem parametros para serem atualizados.'
@@ -83,7 +92,7 @@ module.exports = {
         return response.status(400).json({ error: 'Usuário não encontrado.' });
       };
 
-      const userUpdate = await constructorObjectUpdate({ name, email, cpfCnpj, typePerson });
+      const userUpdate = await constructorObjectUpdate({ name, email, cpfCnpj, typePerson, status });
 
       if (userToken.type === 1 || user.id === userToken.id) {
         await repository.put(id, userUpdate);

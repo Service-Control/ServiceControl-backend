@@ -1,39 +1,43 @@
 'use strict'
-const database = require('../../../../database/index');
+var knex = require('../../../../database');
+
+function Users() {
+	return knex('Users');
+}
+
 module.exports = {
 
 	async get(id) {
 		let users;
 		id ?
-			users = await database('Users')
+			users = await Users()
 				.where('id', '=', id)
-				.select('id', 'name', 'email','cpfCnpj', 'typePerson', 'type')
+				.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type','status')
 				.first()
 			:
-			users = await database('Users')
-				.select('id', 'name', 'email','cpfCnpj', 'typePerson', 'type');
+			users = await Users()
+				.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type', 'status');
 
-	return users;
+		return users;
 	},
-	
+
 	async getValidRegister(email, cpfCnpj) {
-		const users = await database('Users')
+		const users = await Users()
 			.where('email', '=', email).orWhere('cpfCnpj', '=', cpfCnpj)
-			.select('name', 'email','cpfCnpj')
+			.select('name', 'email', 'cpfCnpj')
 			.first();
 
 		return users;
 	},
 
 	async post(data) {
-		const users = await database('Users').insert(data);
+		const users = await Users().insert(data);
 
 		return users;
 	},
 
 	async put(id, data) {
-		console.log(data)
-		const users = await database('Users')
+		const users = await Users()
 			.where('id', '=', id)
 			.update(data)
 			.clearCounters();
@@ -42,7 +46,7 @@ module.exports = {
 	},
 
 	async delete(id) {
-		const users = await database('Users')
+		const users = await Users()
 			.where('id', id)
 			.del();
 

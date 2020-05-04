@@ -20,6 +20,10 @@ module.exports = {
           message: 'E-mail ou senha inválidos!'
         });
 
+      if (user.status === 0)
+        return response.status(400).json({
+          message: 'Usuário bloqueado, por favor entre em contato com seu supervisor.'
+        });
 
       if (!await bcrypt.compare(data.password, user.password))
         return response.status(400).json({
