@@ -5,7 +5,7 @@ const userCompanyRepository = require('../../UserCompany/repository/userCompanyR
 const service = require('../services/CompanyServices');
 
 const { messageValidEmailAndCpfCnpj } = require('../../../../validations/Validate');
-const { UseCompanyEnum } = require('../../../../enums/companyEnums');
+const { UseCompanyEnum } = require('../../../../enums/CompanyEnums');
 const { UseUserEnum } = require('../../../../enums/UserEnums');
 
 const companyEnum = UseCompanyEnum();
