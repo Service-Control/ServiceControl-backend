@@ -2,6 +2,15 @@
 const { UseUserEnum } = require('../../../../enums/UserEnums');
 const userEnum = UseUserEnum();
 
+const validRequestType = (requestType) => {
+	let userType;
+	requestType === userEnum.type.superUser || requestType === userEnum.type.user ?
+		userType = requestType
+		:
+		userType = userEnum.type.user;
+
+	return userType;
+};
 
 module.exports = {
 	async validTypePerson(userTypePerson) {
@@ -14,38 +23,13 @@ module.exports = {
 		return typePerson;
 	},
 
-	async validPostType(requestType) {
-		let userType;
-		requestType === userEnum.type.superUser ||
-			requestType === userEnum.type.admin ||
-			requestType === userEnum.type.user ||
-			requestType === userEnum.type.client ?
-			userType = true
-			:
-			userType = false;
-
-		return userType;
-	},
-
-	async validateUserRegistrationType(tokenUserType, postUserType) {
-		if (tokenUserType === userEnum.type.superUser) {
-			return true;
-		}
-
-		if (tokenUserType === userEnum.type.admin) {
-			if (postUserType !== userEnum.type.superUser) {
+	async validateUserregisterCompany(userType) {
+		if(userType === userEnum.type.superUser||
+			userType === userEnum.type.superUser
+			){
 				return true;
-			}
+			};
 			return false;
-		};
-
-		if (tokenUserType === userEnum.type.user ||
-			tokenUserType === userEnum.type.client) {
-			return false;
-
-		}
-
-		return false;
 	},
 
 	async statusIsValid(requestStatus) {
@@ -61,7 +45,7 @@ module.exports = {
 
 	async filterUserStatus(users, status) {
 		let userFilter = [];
-
+		
 		users && status ? userFilter = users.filter(function (item) {
 			return item.status.toString() === status;
 		}) : false;

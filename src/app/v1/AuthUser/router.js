@@ -10,7 +10,7 @@ router.post('/',
       email: Joi.string().required().email(),
       password: Joi.string().required().min(6),
     })
-  }), controller.auth);
+  }), controller.create);
 
 router.post('/forgot',
   celebrate({

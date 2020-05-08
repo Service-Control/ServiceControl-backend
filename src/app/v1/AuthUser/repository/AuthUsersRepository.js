@@ -3,7 +3,7 @@ const database = require('../../../../database/index');
 
 module.exports = {
   async getUserByEmail(email) {
-   const users = await database('Users')
+   const users = await database('users')
       .where('email', '=', email)
       .select('*')
       .first();
@@ -12,7 +12,7 @@ module.exports = {
   },
 
   async put({id, data}) {
-    const users = await database('Users')
+    const users = await database('users')
       .where('id', '=', id)
       .update(data)
       .clearCounters();

@@ -1,9 +1,9 @@
 'use strict'
 var knex = require('../../../../database');
 
-function Users() {
-	return knex('Users');
-}
+const Users = () => {
+	return knex('users');
+};
 
 module.exports = {
 
@@ -16,12 +16,29 @@ module.exports = {
 				.first()
 			:
 			users = await Users()
-				.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type', 'status');
+				.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type', 'status')
+				.orderBy('name');
 
 		return users;
 	},
 
-	async getValidRegister(email, cpfCnpj) {
+	async getStatus(status) {
+		const users = await Users()
+			.where('status', '=', status)
+			.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type', 'status')
+
+		return users;
+	},
+
+	async getFilter(where, data) {
+		const users = await Users()
+			.where(where, 'ILIKE', `%${data}%`)
+			.select('id', 'name', 'email', 'cpfCnpj', 'typePerson', 'type', 'status')
+
+		return users;
+	},
+	
+	async getByEmailAndCpfCnpj(email, cpfCnpj) {
 		const users = await Users()
 			.where('email', '=', email).orWhere('cpfCnpj', '=', cpfCnpj)
 			.select('name', 'email', 'cpfCnpj')

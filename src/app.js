@@ -40,6 +40,7 @@ app.use(errors());
 app.use('/api/v1/', require('./routes/copyright'));
 app.use('/api/v1/users/', require('./app/v1/User/router'));
 app.use('/api/v1/users/auth', require('./app/v1/AuthUser/router'));
+app.use('/api/v1/company', require('./app/v1/Company/router'));
 
 app.use(function (req, res, next) {
       res.header('Access-Control-Allow-Origin', '*');

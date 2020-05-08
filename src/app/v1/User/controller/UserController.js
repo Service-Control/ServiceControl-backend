@@ -1,75 +1,105 @@
-'use strict'
+'use strict';
 const repository = require('../repository/UsersRepository');
-const { messageValidEmailAndCpfCnpj, constructorObjectUpdate } = require('../services/usersServices');
+const services = require('../services/usersServices');
+const { messageValidEmailAndCpfCnpj } = require('../../../../validations/Validate');
+
 const bcrypt = require('bcryptjs');
 const mailer = require('../../../../modules/mailer');
+
+const { UseUserEnum } = require('../../../../enums/UserEnums');
+const userEnum = UseUserEnum();
+
 
 module.exports = {
   async create(request, response) {
     try {
-      const data = {
-        name: request.body.name.trim(),
+      const userPost = {
+        name: request.body.name.trim().toLowerCase(),
         email: request.body.email.trim(),
         cpfCnpj: request.body.cpfCnpj,
-        typePerson: request.body.typePerson,
+        typePerson: await services.validTypePerson(request.body.typePerson),
+        type: request.body.type,
         password: request.body.password.trim(),
-        status: 0
       };
+      // const userToken = await repository.get(request.userToken.user.id);
 
-    'status 0 = pendente';
-    'status 1 = Ativo';
-    'status 2 = Bloqueado';
-
-      const name = data.name;
-      const userToken = request.userToken.user;
-
-      const users = await repository.getValidRegister(data.email, data.cpfCnpj);
-
+      const users = await repository.getByEmailAndCpfCnpj(userPost.email, userPost.cpfCnpj);
       if (users) {
-        let menssageError = await messageValidEmailAndCpfCnpj(users, data.email, data.typePerson);
-        return response.status(400).json({ error: menssageError })
+        const menssageError = await messageValidEmailAndCpfCnpj(
+          users.email,
+          userPost.email,
+          userPost.typePerson
+        );
+
+        return response.status(400).json({ message: menssageError })
       };
 
-      data.password = await bcrypt.hash(data.password, 10);
+      // if (!await services.validPostType(userPost.type)) {
+      //   return response.status(400).json({ message: 'Tipo de usuário invalido.' })
+      // };
 
-      'The type 1 administrator can register another administrator'
-      userToken.type === 1 ? data.type = request.body.type : data.type = 2;
+      // if (!await services.validateUserRegistrationType(userToken.type, userPost.type)) {
+      //   return response.status(400).json({
+      //     message: 'Voce não tem permissaõ para criar utros usuários.'
+      //   });
+      // };
 
-      const user = await repository.post(data);
+      userPost.password = await bcrypt.hash(userPost.password, 10);
 
+      const user = await repository.post(userPost);
       if (!user) {
-        return response.status(400).json({ error: 'Erro ao realizar registro de usuário.' });
+        return response.status(400).json({
+          message: 'Erro ao realizar registro de usuário.'
+        });
       };
 
-      mailer.sendMail({
-        to: `${user.email}, ${process.env.GMAIL_USER}`,
-        from: '"Service Control" <service.controlLDC@gmail.com>',
-        subject: `Obrigado ${name}, por fazer parte dessa plataforma!`,
-        template: 'subs/subscription',
-        context: {
-          name
-        },
-      });
+      // const name = userPost.name;
+      // mailer.sendMail({
+      //   to: `${user.email}, ${process.env.GMAIL_USER}`,
+      //   from: '"Service Control" <service.controlLDC@gmail.com>',
+      //   subject: `Obrigado ${name}, por fazer parte dessa plataforma!`,
+      //   template: 'subs/subscription',
+      //   context: {
+      //     name
+      //   },
+      // });
 
-      return response.json({ success: 'Usuário registrado com sucesso.' });
+      return response.json({ message: 'Usuário registrado com sucesso.' });
     } catch (error) {
+
       return response.status(400).json({
-        error: `Erro ao realizar registro de usuário. Detalhes:${error}`
+        message: `Erro ao realizar registro de usuário. Detalhes: ${error}`
       });
     };
   },
 
+  async indexProfile(request, response) {
+    try {
+      let userToken = await repository.get(request.userToken.user.id);
+      userToken.url = 'https://i.ibb.co/yk4PgbL/Lucas.jpg'
+      userToken.bio = 'Develolper'
+      return response.json(userToken);
+    } catch (error) {
+
+      return response.status(400).json({
+        message: `Erro ao realizar a listagem de usuários. Detalhes: ${error}`
+      });
+    }
+  },
+
   async index(request, response) {
     try {
-      const userToken = request.userToken.user;
-      if (userToken.type === 1) {
+      const userToken = await repository.get(request.userToken.user.id);
+
+
+      if (userToken.type === userEnum.type.superUser) {
         return response.json(await repository.get());
       }
-      return response.json(await repository.get(userToken.id));
-
+      return response.json([await repository.get(userToken.id)]);
     } catch (error) {
+
       return response.status(400).json({
-        error: `Erro ao realizar a listagem de usuários. Detalhes: ${error}`
+        message: `Erro ao realizar a listagem de usuários. Detalhes: ${error}`
       });
     }
   },
@@ -77,38 +107,38 @@ module.exports = {
   async update(request, response) {
     try {
       const { name, email, cpfCnpj, typePerson, status } = request.body
-      const userToken = request.userToken.user;
       const { id } = request.params;
+      const userToken = await repository.get(request.userToken.user.id);
 
       if (!{ name, email, cpfCnpj, typePerson, status }) {
+
         return response.status(400).json({
-          error:
-            'Não existem parametros para serem atualizados.'
+          message: 'Não existem parametros para serem atualizados.'
         });
       };
 
       const user = await repository.get(id);
       if (!user) {
-        return response.status(400).json({ error: 'Usuário não encontrado.' });
+
+        return response.status(400).json({ message: 'Usuário não encontrado.' });
       };
 
-      const userUpdate = await constructorObjectUpdate({ name, email, cpfCnpj, typePerson, status });
-
-      if (userToken.type === 1 || user.id === userToken.id) {
+      const userUpdate = await services.constructorObjectUpdate({ name, email, cpfCnpj, typePerson, status });
+      await repository.put(id, userUpdate);
+      if (userToken.type === userEnum.type.superUser || user.id === userToken.id) {
         await repository.put(id, userUpdate);
 
-        return response.json({ success: 'Usuário atualizado com sucesso.' });
+        return response.json({ message: 'Usuário atualizado com sucesso.' });
       }
 
       return response.status(401).json({
-        error:
-          'Seu usuário não pussui a permisão para atualizar outros usuários.'
+        message: 'Seu usuário não pussui a permisão para atualizar outros usuários.'
       });
 
     } catch (error) {
+
       return response.status(400).json({
-        error:
-          `Erro ao atualizar usuário. Detalhes: ${error}`
+        message: `Erro ao atualizar usuário. Detalhes: ${error}`
       });
     }
   },
@@ -116,26 +146,28 @@ module.exports = {
   async delete(request, response) {
     try {
       const { id } = request.params;
-      const userToken = request.userToken.user;
-
+      const userToken = await repository.get(request.userToken.user.id);
 
       const user = await repository.get(id);
       if (!user) {
-        return response.status(400).json({ error: 'Usuário não encontrado.' });
+
+        return response.status(400).json({ message: 'Usuário não encontrado.' });
       };
 
-      if (userToken.type === 1 || user.id === userToken.id) {
+      if (userToken.type === userEnum.type.superUser || userToken.id === user.id) {
         await repository.delete(id);
+
         return response.status(204).json();
       };
 
       return response.status(401).json({
-        error: 'Seu usuário não pussui a permissão para deletar outros usuário.'
+        message: 'Seu usuário não pussui a permissão para deletar outros usuário.'
       });
 
     } catch (error) {
+
       return response.status(400).json({
-        error: `Erro ao deletar usuário. Detalhes: ${error}`
+        message: `Erro ao deletar usuário. Detalhes: ${error}`
       });
     };
   },

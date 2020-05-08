@@ -5,9 +5,11 @@ const crypto = require('crypto');
 const authRepository = require('../repository/AuthUsersRepository');
 const { generateToken } = require('../../../../helpers/jwtServices');
 const mailer = require('../../../../modules/mailer');
+const { UseUserEnum } = require('../../../../enums/UserEnums');
+const userEnum = UseUserEnum();
 
 module.exports = {
-  async auth(request, response) {
+  async create(request, response) {
     try {
       const data = {
         email: request.body.email.trim(),
@@ -24,19 +26,18 @@ module.exports = {
         return response.status(400).json({
           message: 'E-mail ou senha inválidos!'
         });
+      user.password = undefined;
 
-      if (user.status !== 1) {
+      if (user.status !== userEnum.status.active) {
         let message;
-        user.status === 0 ?
+        user.status === userEnum.status.blocked ?
           message = 'Usuário bloqueado, por favor entre em contato com seu supervisor.'
           :
-          message = 'Usuário está pendnete de aprovação, aguarde seu supervisor realizar a aprovação do seu acesso.';
+          message = 'Usuário pendente de aprovação, por favor entre em contato com seu supervisor.';
         return response.status(400).json({
           message
         });
       }
-
-      user.password = undefined;
 
       const token = await generateToken({ user: user });
 
@@ -47,6 +48,7 @@ module.exports = {
         type: user.type,
       });
     } catch (error) {
+      
       return response.status(400).json({
         message: error
       });
@@ -136,6 +138,7 @@ module.exports = {
 
       return response.status(200).json({ message: 'Senha atualizada com sucesso.' });
     } catch (error) {
+
       response.status(400).json({ message: `Erro ao resetar senha: ${error}` });
     }
   }
